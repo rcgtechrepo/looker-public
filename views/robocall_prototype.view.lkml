@@ -125,7 +125,9 @@ view: robocall_prototype {
 
   dimension: nomrobo_category {
     type: string
-    sql: ${TABLE}.nomrobo_category ;;
+    #sql: ${TABLE}.nomrobo_category ;;
+    html: <a href='http://www.google.com?q={{ robocall_prototype.anumber._value }}'><img src='https://static-b.lookercdn.com/images/3.0/header/looker_color_logo@2x-2212be80e7.png'></a>;;
+
   }
 
   dimension: out_calls {
