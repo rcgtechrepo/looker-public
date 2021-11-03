@@ -13,7 +13,8 @@ view: robocall_prototype {
 
   dimension: a_number {
     type: number
-    sql: ${TABLE}.a_number ;;
+    sql: REPLACE(cast (${TABLE}.a_number AS STRING), ',', '')  ;;
+    label: "a_number"
     link: {
       label: "Details"
       url: "https://localhost:9998/customer?q={{ value }}&asn={{ robocall_prototype.anumber._value }}&e={{ robocall_prototype.anumber._value }}&f={{ robocall_prototype.anumber._value }}"
@@ -37,11 +38,13 @@ view: robocall_prototype {
 
   dimension: callback_record {
     type: string
+    label: "callback_record"
     sql: ${TABLE}.callback_record ;;
   }
 
   dimension: category {
     type: number
+    label: "category"
     sql: ${TABLE}.category ;;
   }
 
@@ -50,6 +53,7 @@ view: robocall_prototype {
 
   dimension_group: detection {
     type: time
+    label: "detection"
     timeframes: [
       raw,
       time,
@@ -64,6 +68,7 @@ view: robocall_prototype {
 
   dimension: google_search {
     type: string
+    label : "google_search"
     sql: ${TABLE}.google_search ;;
 
     action: {
@@ -105,16 +110,19 @@ view: robocall_prototype {
 
   dimension: in_calls {
     type: string
+    label : "in_calls"
     sql: ${TABLE}.in_calls ;;
   }
 
   dimension: lat {
     type: string
+    label: "lat"
     sql: ${TABLE}.LAT ;;
   }
 
   dimension: length {
     type: number
+    label: "length"
     sql: ${TABLE}.length ;;
   }
 
@@ -125,23 +133,27 @@ view: robocall_prototype {
 
   dimension: nomrobo_category {
     type: string
+    label: "nomrobo_category"
     #sql: ${TABLE}.nomrobo_category ;;
-    html: <a href='http://www.google.com?q={{ robocall_prototype.anumber._value }}'><img src='https://static-b.lookercdn.com/images/3.0/header/looker_color_logo@2x-2212be80e7.png'></a>;;
+    html: <a href='http://www.google.com?q={{ robocall_prototype.anumber._value }}'><img src='https://raw.githubusercontent.com/rcgtechrepo/looker-public/main/audio1.png'></a>;;
 
   }
 
   dimension: out_calls {
     type: string
+    label: "out_calls"
     sql: ${TABLE}.out_calls ;;
   }
 
   dimension: score {
     type: number
+    label: "score"
     sql: ${TABLE}.score ;;
   }
 
   dimension: yp_request {
     type: number
+    label: "yp_request"
     sql: ${TABLE}.yp_request ;;
   }
 
