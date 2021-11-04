@@ -1,24 +1,30 @@
 # The name of this view in Looker is "Robocall Prototype"
 view: robocall_prototype {
-  # The sql_table_name parameter indicates the underlying database table
-  # to be used for all fields in this view.
-  sql_table_name: `rcg_big_data.robocall_prototype`
-    ;;
-  # No primary key is defined for this view. In order to join this view in an Explore,
-  # define primary_key: yes on a dimension that has no repeated values.
 
-  # Here's what a typical dimension looks like in LookML.
-  # A dimension is a groupable field that can be used to filter query results.
-  # This dimension will be called "A Number" in Explore.
+  # to be used for all fields in this view.
+  #sql_table_name: `rcg_big_data.robocall_prototype`
+
+  derived_table: {
+    sql: SELECT
+        * from rcg_big_data.robocall_prototype
+       ;;
+    persist_for: "24 hours"  ## Best practice would be to use `datagroup_trigger: ecommerce_etl` but we don't here for snowflake costs
+  }
+
 
   dimension: a_number {
-    type: number
-    sql: REPLACE(cast (${TABLE}.a_number AS STRING), ',', '')  ;;
+    type: string
+    sql: REGEXP_REPLACE(cast(${TABLE}.a_number AS STRING), r',', '')  ;;
     label: "a_number"
     link: {
       label: "Details"
-      url: "https://localhost:9998/customer?q={{ value }}&asn={{ robocall_prototype.anumber._value }}&e={{ robocall_prototype.anumber._value }}&f={{ robocall_prototype.anumber._value }}"
+      url: "https://localhost:9998/customer?q={{ value }}&asn={{ robocall_prototype.a_number._value }}&e={{ robocall_prototype.a_number._value }}&f={{ robocall_prototype.a_number._value }}"
       icon_url: "https://looker.com/favicon.ico"
+    }
+    link: {
+      label: "{{value}} Analytics Dashboard"
+      url: "/dashboards/thelook::brand_analytics?Brand%20Name={{ value | encode_uri }}"
+      icon_url: "http://www.looker.com/favicon.ico"
     }
   }
 
@@ -72,27 +78,18 @@ view: robocall_prototype {
     sql: ${TABLE}.google_search ;;
 
     action: {
-      label: "Send this to slack channel"
+      label: "Create Report"
       url: "https://hooks.zapier.com/hooks/catch/1662138/tvc3zj/"
 
       param: {
         name: "user_dash_link"
-        value: "https://demo.looker.com/dashboards/160?Email={{ robocall_prototype.anumber._value }}"
+        value: "https://demo.looker.com/dashboards/160?Email={{ robocall_prototype.detection._value }}"
       }
 
       form_param: {
-        name: "Message"
-        type: textarea
-        default: "Hey,
-        Could you check out order #{{value}}. It's saying its {{ robocall_prototype.anumber._value }},
-        but the customer is reaching out to us about it.
-        ~{{ robocall_prototype.anumber._value }}"
-      }
-
-      form_param: {
-        name: "Recipient"
+        name: "Number"
         type: select
-        default: "zevl"
+        default: "{{ robocall_prototype.a_number._value }}"
         option: {
           name: "zevl"
           label: "Zev"
@@ -101,11 +98,42 @@ view: robocall_prototype {
           name: "slackdemo"
           label: "Slack Demo User"
         }
+      }
 
+      form_param: {
+        name: "Category"
+        type: select
+        default: "{{ robocall_prototype.a_number._value  }}"
+        option: {
+          name: "{{ robocall_prototype.a_number._value }}"
+          label: "Zev"
+        }
+        option: {
+          name: "slackdemo"
+          label: "Slack Demo User"
+        }
+      }
+
+      form_param: {
+        name: "Detection Date"
+        type: select
+        default: "{{ robocall_prototype.a_number._value }}"
+        option: {
+          name: "{{ robocall_prototype.a_number._value }}"
+          label: "Zev"
+        }
+        option: {
+          name: "slackdemo"
+          label: "Slack Demo User"
+        }
+      }
+
+      form_param: {
+        name: "Message"
+        type: textarea
+        default: "Please investigate #{{ robocall_prototype.a_number._value }}"
       }
     }
-
-
   }
 
   dimension: in_calls {
@@ -135,7 +163,7 @@ view: robocall_prototype {
     type: string
     label: "nomrobo_category"
     #sql: ${TABLE}.nomrobo_category ;;
-    html: <a href='http://www.google.com?q={{ robocall_prototype.anumber._value }}'><img src='https://raw.githubusercontent.com/rcgtechrepo/looker-public/main/audio1.png'></a>;;
+    html: <a target="_blank" href='https://www2.cs.uic.edu/~i101/SoundFiles/gettysburg.wav?q={{ robocall_prototype.a_number._value }}'><img src='https://raw.githubusercontent.com/rcgtechrepo/looker-public/main/audio3.png'></a>;;
 
   }
 
@@ -155,10 +183,42 @@ view: robocall_prototype {
     type: number
     label: "yp_request"
     sql: ${TABLE}.yp_request ;;
+
   }
 
   measure: count {
     type: count
     drill_fields: []
+    link: {
+      label: "New User's Behavior by Traffic Source"
+      url: "
+      {% assign vis_config = '{
+      \"type\": \"looker_column\",
+      \"show_value_labels\": true,
+      \"y_axis_gridlines\": true,
+      \"show_view_names\": false,
+      \"y_axis_combined\": false,
+      \"show_y_axis_labels\": true,
+      \"show_y_axis_ticks\": true,
+      \"show_x_axis_label\": false,
+      \"value_labels\": \"legend\",
+      \"label_type\": \"labPer\",
+      \"font_size\": \"13\",
+      \"colors\": [
+      \"#1ea8df\",
+      \"#a2dcf3\",
+      \"#929292\"
+      ],
+      \"hide_legend\": false,
+      \"y_axis_orientation\": [
+      \"left\",
+      \"right\"
+      ],
+      \"y_axis_labels\": [
+      \"Average Sale Price ($)\"
+      ]
+      }' %}
+      {{ robocall_prototype.anumber._value }}&vis_config={{ vis_config | encode_uri }}&sorts=users.average_lifetime_orders+descc&toggle=dat,pik,vis&limit=5000"
+    }
   }
 }
