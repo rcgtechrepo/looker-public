@@ -2,7 +2,7 @@
 view: test_view_1 {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: `rcg_big_data.test_2_14`
+  sql_table_name: `rcg_big_data.new_table`
     ;;
   # No primary key is defined for this view. In order to join this view in an Explore,
   # define primary_key: yes on a dimension that has no repeated values.
