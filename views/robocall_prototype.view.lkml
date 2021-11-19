@@ -22,7 +22,7 @@ view: robocall_prototype {
       icon_url: "https://looker.com/favicon.ico"
     }
     link: {
-      label: "{{value}} Analytics Dashboard"
+      label: "Dashboard {{value}}"
       url: "/dashboards/thelook::brand_analytics?Brand%20Name={{ value | encode_uri }}"
       icon_url: "http://www.looker.com/favicon.ico"
     }
